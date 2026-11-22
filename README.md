@@ -1,11 +1,13 @@
-<div align="center">
+# SidelineOS-Core Plugin · Videoanalyse (`video-analysis`)
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+Offizielles SidelineOS-Core-Modul für American Football Videoanalyse, Frame-genaue Telestration, Breakdown-Tagging, Team-Sharing, öffentliche `/share/`-Links und `sideline-bundle.json`-Import/Export.
 
-  <h1>Built with AI Studio</h2>
+## Status & Migration
+Dieses Verzeichnis kapselt das vollständige Videoanalyse-Plugin gemäß `@sidelineos/plugin-sdk` (`v1.0`), vorbereitet für die Auslagerung in ein eigenständiges GitHub-Repository (`sidelineos-plugin-video`).
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+- **Plugin-ID:** `video-analysis`
+- **DB-Tabellenpräfix:** `mod_video_`
+- **S3-Präfix:** `plugins/video-analysis/`
+- **Lizenz:** GNU AGPLv3
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
+Siehe `AI_HANDOFF.md` in diesem Ordner für eine vollständige Übergabe-Dokumentation der bereits umgesetzten UI- und Domain-Logik sowie `/docs/plugin-sdk.md` für die SDK-Spezifikation.
