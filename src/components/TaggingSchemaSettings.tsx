@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus, SlidersHorizontal, Trash2, X } from 'lucide-react';
-import type { TeamRolle } from '../../../sdk/plugin.ts';
+import type { TeamRolle } from '@sidelineos/plugin-sdk';
 import type {
   BreakdownFeldKey,
   TagFeldKonfig,

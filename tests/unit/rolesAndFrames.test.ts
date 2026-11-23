@@ -8,7 +8,7 @@ import {
   frameZuZeit,
   istGleicherFrame,
   zeitZuFrame,
-} from '../../src/plugins/video-analysis/services/frameAndHotkeys.ts';
+} from '../../src/services/frameAndHotkeys.ts';
 
 describe('Exakte Frame-Bindung & Auto-Stop für Canvas-Zeichnungen', () => {
   it('rechnet Millisekunden deterministisch in 25fps-Frames (40 ms) um', () => {

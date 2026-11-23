@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { filtereNachSaison, type TeamRolle } from '../../sdk/plugin.ts';
+import { filtereNachSaison, type TeamRolle } from '@sidelineos/plugin-sdk';
 import type {
   BreakdownFeldKey,
   CanvasZeichnung,

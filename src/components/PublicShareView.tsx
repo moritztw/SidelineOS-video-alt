@@ -8,7 +8,7 @@ import {
   Lock,
   Play,
 } from 'lucide-react';
-import { holeAktuelleBrandKonfig, teileWortmarke } from '../../../sdk/plugin.ts';
+import { holeAktuelleBrandKonfig, teileWortmarke } from '@sidelineos/plugin-sdk';
 import { useVideoAnalysis } from '../VideoAnalysisContext.tsx';
 import { createVideoTranslator, holeVideoKategorieLabel } from '../i18n.ts';
 import {

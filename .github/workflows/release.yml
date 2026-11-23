@@ -1,0 +1,37 @@
+name: SidelineOS Plugin Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Plugin-Bundle packen & SHA-256 erzeugen
+        run: |
+          mkdir -p .bundle
+          cp plugin.manifest.json .bundle/
+          cp -r dist .bundle/dist
+          if [ -d migrations ]; then cp -r migrations .bundle/migrations; fi
+          tar -czf sideline-plugin-v1.tar.gz -C .bundle .
+          sha256sum sideline-plugin-v1.tar.gz > sideline-plugin-v1.tar.gz.sha256
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            sideline-plugin-v1.tar.gz
+            sideline-plugin-v1.tar.gz.sha256
+            plugin.manifest.json

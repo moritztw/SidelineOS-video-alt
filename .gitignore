@@ -2,6 +2,9 @@ node_modules/
 build/
 dist/
 coverage/
+.bundle/
+sideline-plugin-v1.tar.gz
+sideline-plugin-v1.tar.gz.sha256
 .DS_Store
 *.log
 .env*

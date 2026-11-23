@@ -1,4 +1,4 @@
-import type { PluginManifest } from '../../sdk/plugin.ts';
+import type { PluginManifest } from '@sidelineos/plugin-sdk';
 
 /**
  * Typisiertes Plugin-Manifest für das Videoanalyse-Modul.

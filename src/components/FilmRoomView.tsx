@@ -24,7 +24,7 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import type { TeamRolle } from '../../../sdk/plugin.ts';
+import type { TeamRolle } from '@sidelineos/plugin-sdk';
 import type {
   BreakdownFeldKey,
   CanvasZeichnung,

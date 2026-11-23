@@ -1,4 +1,4 @@
-import type { PluginLaufzeitKontext, PluginTab, SidelinePlugin } from '../../sdk/plugin.ts';
+import type { PluginLaufzeitKontext, PluginTab, SidelinePlugin } from '@sidelineos/plugin-sdk';
 import type { VideoModulTab } from './types.ts';
 import { VIDEO_PLUGIN_MANIFEST } from './manifest.ts';
 import { createVideoTranslator } from './i18n.ts';
@@ -142,3 +142,5 @@ export const videoAnalysisPlugin: SidelinePlugin = {
     sysadmin: VideoSysadminSettingsPanel,
   },
 };
+
+export default videoAnalysisPlugin;

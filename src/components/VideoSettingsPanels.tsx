@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { HardDrive, Keyboard, RotateCcw, Trash2 } from 'lucide-react';
-import type { PluginSettingsKontext } from '../../../sdk/plugin.ts';
+import type { PluginSettingsKontext } from '@sidelineos/plugin-sdk';
 import type { HotkeyAktion, KommentarEcke } from '../types.ts';
 import {
   createVideoTranslator,

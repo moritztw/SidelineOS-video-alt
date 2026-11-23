@@ -5,7 +5,7 @@ import {
   erstelleBeispielBundle,
   reelZuBundle,
   validiereUndParseBundle,
-} from '../../src/plugins/video-analysis/services/bundleSchema.ts';
+} from '../../src/services/bundleSchema.ts';
 
 test('validiert ein vollständiges Multi-Angle-Bundle inklusive optionalem Offset und Winkel-Lücke', () => {
   const beispiel = erstelleBeispielBundle();

@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "sidelineos-plugin-video",
+  "description": "Eigenständiges Videoanalyse-Plugin für SidelineOS-Core (Multi-Angle Film Room, Frame-Telestration, Hudl-kompatibles Breakdown-Tagging).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,4 +1,4 @@
-import { createPluginTranslator, type SprachWoerterbuecher } from '../../sdk/plugin.ts';
+import { createPluginTranslator, type SprachWoerterbuecher } from '@sidelineos/plugin-sdk';
 import type {
   HotkeyAktion,
   KommentarEcke,
