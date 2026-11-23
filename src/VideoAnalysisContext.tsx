@@ -7,7 +7,9 @@ import type {
   NormPunkt,
   NutzerEinstellungen,
   ShareDownloadLink,
+  SmartPlaylist,
   SpielerFreigabe,
+  Spielzug,
   TagFeldKonfig,
   TeamFreigabeEintrag,
   VideoReel,
@@ -24,6 +26,18 @@ import {
 } from './services/taggingEngine.ts';
 
 const SETTINGS_STORAGE_KEY = 'sidelineos.plugin.video.user_settings.v1';
+const PLAYLISTS_STORAGE_KEY = 'sidelineos.plugin.video.smart_playlists.v1';
+
+function ladeSmartPlaylists(): SmartPlaylist[] {
+  try {
+    const roh = window.localStorage.getItem(PLAYLISTS_STORAGE_KEY);
+    if (!roh) return [];
+    const geparst = JSON.parse(roh);
+    return Array.isArray(geparst) ? (geparst as SmartPlaylist[]) : [];
+  } catch {
+    return [];
+  }
+}
 
 function ladeNutzerEinstellungen(): NutzerEinstellungen {
   try {
@@ -67,10 +81,13 @@ function zaehleEntwuerfe(reel: VideoReel): number {
 export interface VideoAnalysisContextWert {
   reels: VideoReel[];
   tagSchema: TagFeldKonfig[];
+  smartPlaylists: SmartPlaylist[];
   nutzerEinstellungen: NutzerEinstellungen;
   ausgewaehltesReelId: string;
+  ausgewaehltesPlayNumber: number | undefined;
   uploadHervorgehoben: boolean;
   setAusgewaehltesReelId: (reelId: string) => void;
+  setAusgewaehltesPlayNumber: (playNumber: number | undefined) => void;
   highlightUpload: () => void;
   ermittleAusgewaehltesReel: (
     teamId: string,
@@ -79,6 +96,9 @@ export interface VideoAnalysisContextWert {
   ) => VideoReel | null;
   onNutzerEinstellungenAendern: (neu: NutzerEinstellungen) => void;
   onNeuesReel: (neuesReel: VideoReel) => void;
+  onPlaysAktualisieren: (reelId: string, neuePlays: Spielzug[]) => void;
+  onPlaylistSpeichern: (playlist: SmartPlaylist) => void;
+  onPlaylistLoeschen: (playlistId: string) => void;
   onFreigabeAendern: (reelId: string, freigabe: SpielerFreigabe) => void;
   onTeamFreigabenAendern: (reelId: string, freigaben: TeamFreigabeEintrag[]) => void;
   onShareLinksAendern: (reelId: string, links: ShareDownloadLink[]) => void;
@@ -124,11 +144,15 @@ const VideoAnalysisContext = createContext<VideoAnalysisContextWert | null>(null
 export function VideoAnalysisProvider({ children }: { children: ReactNode }) {
   const [reels, setReels] = useState<VideoReel[]>(INITIALE_DEMO_REELS);
   const [tagSchema, setTagSchema] = useState<TagFeldKonfig[]>(STANDARD_TAG_SCHEMA);
+  const [smartPlaylists, setSmartPlaylists] = useState<SmartPlaylist[]>(ladeSmartPlaylists);
   const [nutzerEinstellungen, setNutzerEinstellungen] = useState<NutzerEinstellungen>(
     ladeNutzerEinstellungen
   );
   const [ausgewaehltesReelId, setAusgewaehltesReelId] = useState<string>(
     INITIALE_DEMO_REELS[0].id
+  );
+  const [ausgewaehltesPlayNumber, setAusgewaehltesPlayNumber] = useState<number | undefined>(
+    undefined
   );
   const [uploadHervorgehoben, setUploadHervorgehoben] = useState(false);
 
@@ -180,19 +204,47 @@ export function VideoAnalysisProvider({ children }: { children: ReactNode }) {
     return sichtbar.find((r) => r.id === ausgewaehltesReelId) ?? sichtbar[0] ?? null;
   };
 
+  const speicherePlaylists = (updater: (alt: SmartPlaylist[]) => SmartPlaylist[]) => {
+    setSmartPlaylists((alt) => {
+      const neu = updater(alt);
+      try {
+        window.localStorage.setItem(PLAYLISTS_STORAGE_KEY, JSON.stringify(neu));
+      } catch {
+        // Speicher im eingebetteten Kontext ggf. deaktiviert
+      }
+      return neu;
+    });
+  };
+
   const wert: VideoAnalysisContextWert = {
     reels,
     tagSchema,
+    smartPlaylists,
     nutzerEinstellungen,
     ausgewaehltesReelId,
+    ausgewaehltesPlayNumber,
     uploadHervorgehoben,
     setAusgewaehltesReelId,
+    setAusgewaehltesPlayNumber,
     highlightUpload,
     ermittleAusgewaehltesReel,
     onNutzerEinstellungenAendern,
     onNeuesReel: (neuesReel) => {
       setReels((alt) => [neuesReel, ...alt]);
       setAusgewaehltesReelId(neuesReel.id);
+      setAusgewaehltesPlayNumber(undefined);
+    },
+    onPlaysAktualisieren: (reelId, neuePlays) => {
+      aktualisiereReel(reelId, (reel) => ({ ...reel, plays: neuePlays }));
+    },
+    onPlaylistSpeichern: (playlist) => {
+      speicherePlaylists((alt) => {
+        const existiert = alt.some((p) => p.id === playlist.id);
+        return existiert ? alt.map((p) => (p.id === playlist.id ? playlist : p)) : [playlist, ...alt];
+      });
+    },
+    onPlaylistLoeschen: (playlistId) => {
+      speicherePlaylists((alt) => alt.filter((p) => p.id !== playlistId));
     },
     onFreigabeAendern: (reelId, freigabe) => {
       aktualisiereReel(reelId, (reel) => ({ ...reel, visibility: freigabe }));

@@ -56,6 +56,7 @@ import { TelestrationCanvas } from './TelestrationCanvas.tsx';
 
 interface FilmRoomViewProps {
   reel: VideoReel;
+  initialPlayNumber?: number;
   teamRolle: TeamRolle;
   tagSchema: TagFeldKonfig[];
   nutzerEinstellungen: NutzerEinstellungen;
@@ -133,6 +134,7 @@ function formatiereZeit(ms: number): string {
 
 export function FilmRoomView({
   reel,
+  initialPlayNumber,
   teamRolle,
   tagSchema,
   nutzerEinstellungen,
@@ -160,12 +162,19 @@ export function FilmRoomView({
   const playerContainerRef = useRef<HTMLDivElement | null>(null);
   const gestoppteFramesRef = useRef<Set<number>>(new Set());
 
-  const [aktiverPlayIndex, setAktiverPlayIndex] = useState(0);
+  const startPlayIndex = useMemo(() => {
+    if (!initialPlayNumber) return 0;
+    const idx = reel.plays.findIndex((p) => p.play_number === initialPlayNumber);
+    return idx >= 0 ? idx : 0;
+  }, [initialPlayNumber, reel.plays]);
+
+  const [aktiverPlayIndex, setAktiverPlayIndex] = useState(startPlayIndex);
   const [aktiverWinkel, setAktiverWinkel] = useState<string>(reel.angles[0] ?? 'SIDELINE');
   const [laeuft, setLaeuft] = useState(false);
   const [zeitMs, setZeitMs] = useState(() => {
     const startWinkel = reel.angles[0] ?? 'SIDELINE';
-    const ersteZeichnung = reel.plays[0]?.drawings?.find((d) => d.angle === startWinkel);
+    const startPlay = reel.plays[startPlayIndex] ?? reel.plays[0];
+    const ersteZeichnung = startPlay?.drawings?.find((d) => d.angle === startWinkel);
     return ersteZeichnung ? frameZuZeit(zeitZuFrame(ersteZeichnung.timestamp_ms)) : 0;
   });
   const zeitMsRef = useRef<number>(zeitMs);

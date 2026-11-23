@@ -1,12 +1,13 @@
-import type { PluginLaufzeitKontext, PluginTab, SidelinePlugin } from '@sidelineos/plugin-sdk';
+import { filtereNachSaison, type PluginLaufzeitKontext, type PluginTab, type SidelinePlugin } from '@sidelineos/plugin-sdk';
 import type { VideoModulTab } from './types.ts';
 import { VIDEO_PLUGIN_MANIFEST } from './manifest.ts';
 import { createVideoTranslator } from './i18n.ts';
 import { VideoAnalysisProvider, useVideoAnalysis } from './VideoAnalysisContext.tsx';
+import { CutSyncEditor } from './components/CutSyncEditor.tsx';
 import { DashboardView } from './components/DashboardView.tsx';
 import { FilmRoomView } from './components/FilmRoomView.tsx';
 import { PublicShareView } from './components/PublicShareView.tsx';
-import { VideoCutSyncPlaceholder } from './components/VideoCutSyncPlaceholder.tsx';
+import { SmartPlaylistsView } from './components/SmartPlaylistsView.tsx';
 import {
   VideoSysadminSettingsPanel,
   VideoTeamSettingsPanel,
@@ -22,11 +23,27 @@ function VideoAnalysisMainView({ ctx }: { ctx: PluginLaufzeitKontext }) {
     ctx.aktiveTeamAnsicht
   );
 
+  const sichtbareReels = filtereNachSaison(
+    video.reels.filter(
+      (r) =>
+        r.teamId === ctx.team.id &&
+        (ctx.aktiveTeamAnsicht === 'PLAYER' ? r.visibility !== 'COACHES_ONLY' : true)
+    ),
+    ctx.gewaehlteSaison
+  );
+
+  const oeffneImFilmRoom = (reelId: string, playNumber?: number) => {
+    video.setAusgewaehltesReelId(reelId);
+    video.setAusgewaehltesPlayNumber(playNumber);
+    ctx.onTabWechseln('film-room');
+  };
+
   if (aktiverTab === 'film-room' && aktivesReel) {
     return (
       <FilmRoomView
-        key={aktivesReel.id}
+        key={`${aktivesReel.id}-${video.ausgewaehltesPlayNumber ?? 1}`}
         reel={aktivesReel}
+        initialPlayNumber={video.ausgewaehltesPlayNumber}
         teamRolle={ctx.aktiveTeamAnsicht}
         locale={ctx.locale}
         tagSchema={video.tagSchema}
@@ -49,12 +66,36 @@ function VideoAnalysisMainView({ ctx }: { ctx: PluginLaufzeitKontext }) {
     );
   }
 
-  if (aktiverTab === 'cut-sync' || aktiverTab === 'playlists') {
+  if (aktiverTab === 'cut-sync') {
     return (
-      <VideoCutSyncPlaceholder
-        ansicht={aktiverTab}
-        locale={ctx.locale}
+      <CutSyncEditor
+        reels={sichtbareReels}
         ausgewaehltesReel={aktivesReel}
+        locale={ctx.locale}
+        onReelWaehlen={(reelId) => {
+          video.setAusgewaehltesReelId(reelId);
+          video.setAusgewaehltesPlayNumber(undefined);
+        }}
+        onPlaysAktualisieren={video.onPlaysAktualisieren}
+        onImFilmRoomOeffnen={oeffneImFilmRoom}
+        onZurueckZumDashboard={() => ctx.onTabWechseln('dashboard')}
+      />
+    );
+  }
+
+  if (aktiverTab === 'playlists') {
+    return (
+      <SmartPlaylistsView
+        teamId={ctx.team.id}
+        gewaehlteSaison={ctx.gewaehlteSaison}
+        teamRolle={ctx.aktiveTeamAnsicht}
+        locale={ctx.locale}
+        reels={video.reels}
+        tagSchema={video.tagSchema}
+        gespeichertePlaylists={video.smartPlaylists}
+        onPlaylistSpeichern={video.onPlaylistSpeichern}
+        onPlaylistLoeschen={video.onPlaylistLoeschen}
+        onImFilmRoomOeffnen={oeffneImFilmRoom}
         onZurueckZumDashboard={() => ctx.onTabWechseln('dashboard')}
       />
     );
@@ -74,10 +115,7 @@ function VideoAnalysisMainView({ ctx }: { ctx: PluginLaufzeitKontext }) {
       onFreigabeAendern={video.onFreigabeAendern}
       onTeamFreigabenAendern={video.onTeamFreigabenAendern}
       onShareLinksAendern={video.onShareLinksAendern}
-      onReelOeffnen={(reel) => {
-        video.setAusgewaehltesReelId(reel.id);
-        ctx.onTabWechseln('film-room');
-      }}
+      onReelOeffnen={(reel) => oeffneImFilmRoom(reel.id)}
       onShareVorschau={ctx.onPublicShareOeffnen}
     />
   );

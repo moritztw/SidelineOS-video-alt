@@ -230,3 +230,56 @@ export const BASIS_TAGGING_FELDER: BreakdownFeldKey[] = [
   'hash',
   'play_type',
 ];
+
+export type SyncProblemTyp = 'MISSING_CLIP' | 'OFFSET_APPLIED' | 'DURATION_MISMATCH';
+
+export interface SyncProblem {
+  playNumber: number;
+  angle: string;
+  typ: SyncProblemTyp;
+  detailMs?: number;
+}
+
+export type JklGeschwindigkeit = -4 | -2 | -1 | 0 | 1 | 2 | 4;
+
+export type FilterOperator =
+  | 'equals'
+  | 'not_equals'
+  | 'contains'
+  | 'gte'
+  | 'lte'
+  | 'in'
+  | 'is_empty'
+  | 'is_not_empty';
+
+export type PlaylistKombinator = 'AND' | 'OR';
+
+export interface PlaylistFilterRegel {
+  id: string;
+  feldKey: BreakdownFeldKey;
+  operator: FilterOperator;
+  wert?: string | number;
+  werte?: string[];
+}
+
+export interface SmartPlaylist {
+  id: string;
+  teamId: string;
+  saison?: string;
+  name: string;
+  beschreibung?: string;
+  kombinator: PlaylistKombinator;
+  regeln: PlaylistFilterRegel[];
+  reelIds?: string[];
+  sichtbarkeit: SpielerFreigabe;
+  erstelltAm: string;
+}
+
+export interface PlaylistTreffer {
+  reelId: string;
+  reelTitle: string;
+  eventDate: string;
+  category: ReelKategorie;
+  play: Spielzug;
+}
+

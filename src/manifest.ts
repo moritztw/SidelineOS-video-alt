@@ -12,7 +12,7 @@ export const VIDEO_PLUGIN_MANIFEST: PluginManifest = {
   version: '0.2.0',
   sdkVersion: '1.0',
   autor: 'SidelineOS Core Team',
-  repositoryUrl: 'https://github.com/sidelineos/sidelineos-plugin-video',
+  repositoryUrl: 'https://github.com/moritztw/SidelineOS-video',
   icon: 'film',
   status: 'AKTIV',
   standardAktiviert: true,

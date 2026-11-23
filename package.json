@@ -11,6 +11,7 @@
     }
   },
   "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "clean": "rm -rf dist .bundle sideline-plugin-v1.tar.gz sideline-plugin-v1.tar.gz.sha256",
     "lint": "tsc --noEmit",
