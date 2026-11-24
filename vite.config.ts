@@ -1,8 +1,16 @@
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig(({ command }) => {
+  const isBuild = command === 'build';
+  if (isBuild) {
+    process.env.NODE_ENV = 'production';
+  }
+
   return {
     plugins: [
       react(),
@@ -25,9 +33,14 @@ export default defineConfig(({ command }) => {
           }
         : null,
     ].filter(Boolean),
+    define: isBuild
+      ? {
+          'process.env.NODE_ENV': JSON.stringify('production'),
+        }
+      : undefined,
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': rootDir,
       },
     },
     server: {
@@ -38,12 +51,18 @@ export default defineConfig(({ command }) => {
     },
     build: {
       lib: {
-        entry: path.resolve(__dirname, 'src/index.tsx'),
+        entry: path.resolve(rootDir, 'src/index.tsx'),
         formats: ['es'],
         fileName: 'index',
       },
       rollupOptions: {
-        external: ['react', 'react-dom', 'react/jsx-runtime', '@sidelineos/plugin-sdk'],
+        external: [
+          'react',
+          'react-dom',
+          'react/jsx-runtime',
+          'lucide-react',
+          '@sidelineos/plugin-sdk',
+        ],
       },
       sourcemap: true,
       emptyOutDir: true,
